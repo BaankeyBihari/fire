@@ -73,7 +73,7 @@ export default function Plan(props: any) {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <Box sx={{ width: '100%', paddingTop: "10px", margin: "20px" }}>
+      <Box sx={{ width: '300px', paddingTop: "10px", margin: "20px" }}>
         <form onSubmit={formik.handleSubmit}>
           <Box sx={{ width: '100%', paddingTop: "10px", margin: "20px" }}>
             <DesktopDatePicker
@@ -158,7 +158,7 @@ export default function Plan(props: any) {
             helperText={formik.touched.sipGrowthRate && formik.errors.sipGrowthRate}
           />
           <Button color="primary" variant="contained" fullWidth type="submit">
-            Submit
+            PLAN
           </Button>
         </form>
       </Box>

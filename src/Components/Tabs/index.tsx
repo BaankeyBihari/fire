@@ -132,6 +132,14 @@ export default function ColorTabs() {
     reader.readAsText(fileObj)
   }
 
+  function getDateString() {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = `${date.getMonth() + 1}`.padStart(2, '0');
+    const day =`${date.getDate()}`.padStart(2, '0');
+    return `${year}${month}${day}`
+  }
+
   return (
     <>
       <Stack spacing={2} direction="row">
@@ -145,7 +153,7 @@ export default function ColorTabs() {
           ref={fileField}
         />
         <Button variant="outlined" onClick={() => {
-          handleSaveToPC(state, 'fire');
+          handleSaveToPC(state, `fire_${getDateString()}`);
         }}>Export</Button>
       </Stack>
       <Box sx={{ width: '100%' }}>

@@ -7,7 +7,7 @@
 
 # testing
 /coverage
-/fire.json
+/fire*.json
 
 # next.js
 /.next/
