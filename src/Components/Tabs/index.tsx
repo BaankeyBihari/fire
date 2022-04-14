@@ -5,13 +5,13 @@ import Box from '@mui/material/Box';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import SummarizeIcon from '@mui/icons-material/Summarize';
-import Reducer from '@components/Reducer/reducer';
-import InitialState, { Inflation, Investment } from '@components/Reducer/initialState';
+import Reducer from './src/components/Reducer/reducer';
+import InitialState, { Inflation, Investment } from './src/components/Reducer/initialState';
 
-import Plan from "@components/Tabs/plan";
-import Record from '@components/Tabs/record';
-import Status from '@components/Tabs/status';
-import ActionName from "@components/Reducer/actions";
+import Plan from "./src/components/Tabs/plan";
+import Record from './src/components/Tabs/record';
+import Status from './src/components/Tabs/status';
+import ActionName from "./src/components/Reducer/actions";
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 

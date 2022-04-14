@@ -1,6 +1,6 @@
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers';
-import { compareInvestment, } from "@components/Reducer/reducer";
+import { compareInvestment, } from "./src/components/Reducer/reducer";
 import * as React from 'react';
 
 import Table from "@mui/material/Table";
@@ -12,7 +12,7 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 
 import Typography from '@mui/material/Typography';
-import { Investment } from '@components/Reducer/initialState';
+import { Investment } from './src/components/Reducer/initialState';
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';

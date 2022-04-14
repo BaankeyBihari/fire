@@ -1,6 +1,6 @@
-import InitialState, { State, Investment, Inflation } from "@components/Reducer/initialState";
+import InitialState, { State, Investment, Inflation } from "./src/components/Reducer/initialState";
 
-import ActionName, { Action } from "@components/Reducer/actions";
+import ActionName, { Action } from "./src/components/Reducer/actions";
 import { addYears, differenceInCalendarDays } from "date-fns";
 
 export function compareInvestment(a: Investment, b: Investment) {

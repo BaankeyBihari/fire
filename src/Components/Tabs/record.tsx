@@ -1,6 +1,6 @@
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DesktopDatePicker, LocalizationProvider } from '@mui/x-date-pickers';
-import { DummyInflation, DummyInvestment } from "@components/Reducer/reducer";
+import { DummyInflation, DummyInvestment } from "./src/components/Reducer/reducer";
 import * as React from 'react';
 
 import Table from "@mui/material/Table";
@@ -17,7 +17,7 @@ import TextField from '@mui/material/TextField';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import DoneIcon from '@mui/icons-material/Done';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import { Inflation, Investment } from '@components/Reducer/initialState';
+import { Inflation, Investment } from './src/components/Reducer/initialState';
 import Box from '@mui/material/Box';
 
 interface TagOptionType {

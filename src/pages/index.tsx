@@ -3,7 +3,7 @@ import type { NextPage } from 'next';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import Copyright from '@components/Copyright';
+import Copyright from './src/components/Copyright';
 import Tabs from "@src/components/Tabs";
 
 const Home: NextPage = () => {
