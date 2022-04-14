@@ -34,7 +34,7 @@
   "devDependencies": {
     "@babel/core": "7.17.9",
     "@types/node": "latest",
-    "@types/react": "17.0.44",
+    "@types/react": "18.0.5",
     "@types/yup": "0.29.13",
     "eslint": "latest",
     "eslint-config-next": "latest",
