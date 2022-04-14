@@ -1,4 +1,4 @@
-import { addYears } from "date-fns";
+import {addYears} from 'date-fns';
 
 export interface Investment {
     investedAmount: number,
@@ -27,17 +27,17 @@ export interface State {
 }
 
 const InitialState: State = {
-    startDate: new Date(new Date().toDateString()),
-    retireDate: addYears(new Date(new Date().toDateString()), 20),
-    startingSIP: 0,
-    incomeAtMaturity: 0.0,
-    currency: 'INR',
-    expectedAnnualInflation: 0.0,
-    expectedGrowthRate: 0.0,
-    sipGrowthRate: 0.0,
-    investments: [],
-    annualInflation: [],
-    investmentPlan: []
-}
+  startDate: new Date(new Date().toDateString()),
+  retireDate: addYears(new Date(new Date().toDateString()), 20),
+  startingSIP: 0,
+  incomeAtMaturity: 0.0,
+  currency: 'INR',
+  expectedAnnualInflation: 0.0,
+  expectedGrowthRate: 0.0,
+  sipGrowthRate: 0.0,
+  investments: [],
+  annualInflation: [],
+  investmentPlan: [],
+};
 
 export default InitialState;

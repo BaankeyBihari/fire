@@ -5,13 +5,13 @@ import Box from '@mui/material/Box';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import SummarizeIcon from '@mui/icons-material/Summarize';
-import Reducer from './src/components/Reducer/reducer';
-import InitialState, { Inflation, Investment } from './src/components/Reducer/initialState';
+import Reducer from '@components/Reducer/reducer';
+import InitialState, {Inflation, Investment} from '@components/Reducer/initialState';
 
-import Plan from "./src/components/Tabs/plan";
-import Record from './src/components/Tabs/record';
-import Status from './src/components/Tabs/status';
-import ActionName from "./src/components/Reducer/actions";
+import Plan from '@components/Tabs/plan';
+import Record from '@components/Tabs/record';
+import Status from '@components/Tabs/status';
+import ActionName from '@components/Reducer/actions';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 
@@ -20,22 +20,22 @@ export default function ColorTabs() {
   const [state, dispatch] = React.useReducer(Reducer, InitialState);
 
   React.useEffect(() => {
-    console.log("Current State", state)
-  }, [state])
+    console.log('Current State', state);
+  }, [state]);
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setTabValue(newValue);
   };
 
   const updatePlan = (
-    startDate: Date,
-    retireDate: Date,
-    startingSIP: number,
-    incomeAtMaturity: number,
-    currency: string,
-    expectedAnnualInflation: number,
-    expectedGrowthRate: number,
-    sipGrowthRate: number
+      startDate: Date,
+      retireDate: Date,
+      startingSIP: number,
+      incomeAtMaturity: number,
+      currency: string,
+      expectedAnnualInflation: number,
+      expectedGrowthRate: number,
+      sipGrowthRate: number,
   ) => {
     dispatch({
       actionType: ActionName.UPDATE_PLAN,
@@ -47,97 +47,97 @@ export default function ColorTabs() {
         currency,
         expectedAnnualInflation,
         expectedGrowthRate,
-        sipGrowthRate
-      }
-    })
-  }
+        sipGrowthRate,
+      },
+    });
+  };
 
   const updateInvestments = (
-    investments: Investment[]
+      investments: Investment[],
   ) => {
     dispatch({
       actionType: ActionName.UPDATE_INVESTMENTS,
       payload: {
-        investments
-      }
-    })
-  }
+        investments,
+      },
+    });
+  };
 
   const updateAnualInflation = (
-    annualInflation: Inflation[]
+      annualInflation: Inflation[],
   ) => {
     dispatch({
       actionType: ActionName.UPDATE_INFLATION,
       payload: {
-        annualInflation
-      }
-    })
-  }
+        annualInflation,
+      },
+    });
+  };
 
   const handleSaveToPC = (jsonData: any, filename: string) => {
     const fileData = JSON.stringify(jsonData, null, 2);
-    const blob = new Blob([fileData], { type: "text/plain" });
+    const blob = new Blob([fileData], {type: 'text/plain'});
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.download = `${filename}.json`;
     link.href = url;
     link.click();
-  }
+  };
 
-  const fileField = React.useRef<HTMLInputElement>(null)
+  const fileField = React.useRef<HTMLInputElement>(null);
 
   const upload = (e: any) => {
-    e.preventDefault()
+    e.preventDefault();
     if (fileField.current !== null) {
       fileField.current.click();
     }
-  }
+  };
 
   const openFile = (evt: any) => {
-    let status = [] // Status output
-    const fileObj = evt.target.files[0]
-    const reader = new FileReader()
+    const status = []; // Status output
+    const fileObj = evt.target.files[0];
+    const reader = new FileReader();
 
     let fileloaded = (e: any) => {
       // e.target.result is the file's content as text
-      const fileContents = e.target.result
+      const fileContents = e.target.result;
       status.push(
-        `File name: "${fileObj.name}". Length: ${fileContents.length} bytes.`
-      )
+          `File name: "${fileObj.name}". Length: ${fileContents.length} bytes.`,
+      );
       // Show first 80 characters of the file
-      let jsonData = JSON.parse(fileContents)
-      jsonData.startDate = new Date(jsonData.startDate)
-      jsonData.retireDate = new Date(jsonData.retireDate)
+      const jsonData = JSON.parse(fileContents);
+      jsonData.startDate = new Date(jsonData.startDate);
+      jsonData.retireDate = new Date(jsonData.retireDate);
       jsonData.investmentPlan = jsonData.investmentPlan.map((e: any) => {
-        e.recordDate = new Date(e.recordDate)
-        return e
-      })
+        e.recordDate = new Date(e.recordDate);
+        return e;
+      });
       jsonData.investments = jsonData.investments.map((e: any) => {
-        e.recordDate = new Date(e.recordDate)
-        return e
-      })
+        e.recordDate = new Date(e.recordDate);
+        return e;
+      });
       jsonData.annualInflation = jsonData.annualInflation.map((e: any) => {
-        e.recordDate = new Date(e.recordDate)
-        return e
-      })
+        e.recordDate = new Date(e.recordDate);
+        return e;
+      });
       dispatch({
         actionType: ActionName.LOAD,
-        payload: jsonData
-      })
-    }
+        payload: jsonData,
+      });
+    };
 
     // Mainline of the method
-    fileloaded = fileloaded.bind(evt)
-    reader.onload = fileloaded
-    reader.readAsText(fileObj)
-  }
+    fileloaded = fileloaded.bind(evt);
+    reader.onload = fileloaded;
+    reader.readAsText(fileObj);
+  };
 
   function getDateString() {
     const date = new Date();
     const year = date.getFullYear();
     const month = `${date.getMonth() + 1}`.padStart(2, '0');
     const day =`${date.getDate()}`.padStart(2, '0');
-    return `${year}${month}${day}`
+    return `${year}${month}${day}`;
   }
 
   return (
@@ -146,7 +146,7 @@ export default function ColorTabs() {
         <Button variant="outlined" onClick={upload}>Import</Button>
         <input
           type="file"
-          style={{ display: "none" }}
+          style={{display: 'none'}}
           multiple={false}
           accept=".json,application/json"
           onChange={(evt) => openFile(evt)}
@@ -156,7 +156,7 @@ export default function ColorTabs() {
           handleSaveToPC(state, `fire_${getDateString()}`);
         }}>Export</Button>
       </Stack>
-      <Box sx={{ width: '100%' }}>
+      <Box sx={{width: '100%'}}>
         <Tabs
           value={tabValue}
           onChange={handleChange}

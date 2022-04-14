@@ -1,10 +1,10 @@
 import * as React from 'react';
-import type { NextPage } from 'next';
+import type {NextPage} from 'next';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import Copyright from './src/components/Copyright';
-import Tabs from "@src/components/Tabs";
+import Copyright from '@components/Copyright';
+import Tabs from '@components/Tabs';
 
 const Home: NextPage = () => {
   return (
