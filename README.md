@@ -2,7 +2,7 @@
 
 ## TODO
 
-Add bhavcopy for equities for [nse](https://archives.nseindia.com/content/historical/EQUITIES/2022/APR/cm19APR2022bhav.csv.zip and [bse](https://www.bseindia.com/download/BhavCopy/Equity/EQ040322_CSV.ZIP)
+Add bhavcopy for equities for [nse](https://archives.nseindia.com/content/historical/EQUITIES/2022/APR/cm19APR2022bhav.csv.zip) and [bse](https://www.bseindia.com/download/BhavCopy/Equity/EQ040322_CSV.ZIP)
 `https://archives.nseindia.com/content/historical/EQUITIES/{yyyy}/{MMM}/cm{dd}{MMM}{yyyy}bhav.csv.zip`
 `https://archives.nseindia.com/products/content/sec_bhavdata_full_{dd}{mm}{yyyy}.csv`
 `https://www.bseindia.com/download/BhavCopy/Equity/EQ{dd}{mm}22_CSV.ZIP`
