@@ -5,5 +5,30 @@
   // Add those two lines:
   "editor.formatOnSave": true, // Tell VSCode to format files on save
   "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "cSpell.words": ["Parens"] // Tell VSCode to use Prettier as default file formatter
+  "cSpell.words": [
+    "Alertmanager",
+    "cadvisor",
+    "chartjs",
+    "errorln",
+    "fatalln",
+    "formik",
+    "infoln",
+    "nextjs",
+    "Parens",
+    "println",
+    "ROOTDIR",
+    "successln",
+    "timeseries",
+    "typecheck",
+    "warnln"
+  ],
+  "[dockerfile]": {
+    "editor.defaultFormatter": "ms-azuretools.vscode-docker"
+  },
+  "[shellscript]": {
+    "editor.defaultFormatter": "foxundermoon.shell-format"
+  },
+  "[ignore]": {
+    "editor.defaultFormatter": "foxundermoon.shell-format"
+  } // Tell VSCode to use Prettier as default file formatter
 }

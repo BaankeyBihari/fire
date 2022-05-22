@@ -9,7 +9,13 @@
     "lint": "next lint",
     "lint-fix": "next lint -- --fix",
     "post-update": "yarn upgrade --latest",
-    "typecheck": "tsc --project tsconfig.json --noEmit"
+    "typecheck": "tsc --project tsconfig.json --noEmit",
+    "dockerize": "docker build -t fire.next.server .",
+    "docker:compose-down": "docker-compose down",
+    "docker:compose-up": "docker-compose up -d",
+    "docker:clean": "docker system prune --volumes -f",
+    "docker:down": "npm run docker:compose-down && npm run docker:clean",
+    "docker:up": "npm run docker:down && npm run dockerize && npm run docker:compose-up"
   },
   "dependencies": {
     "@date-io/date-fns": "2.13.1",

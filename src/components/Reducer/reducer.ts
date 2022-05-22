@@ -87,7 +87,7 @@ function generatePlan(
     currentInvestmentRecord.tag = 'Planned'
     investmentPlan = [...investmentPlan, currentInvestmentRecord]
     currentAmount =
-      currentAmount * delta * dailyGrowthRate + currentSIP + currentAmount
+      (currentAmount * delta * dailyGrowthRate) + currentSIP + currentAmount
     currentAmount = parseFloat(currentAmount.toFixed(2))
     currentInvestment += currentSIP
     currentInvestment = parseFloat(currentInvestment.toFixed(2))

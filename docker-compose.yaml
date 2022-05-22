@@ -1,0 +1,10 @@
+version: '3.7'
+
+services:
+  cov_srv1:
+    image: fire.next.server:latest
+    labels:
+      service: fire.next.server
+    ports:
+      - '6000:3000'
+    container_name: fire.next.server_1
