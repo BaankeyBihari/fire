@@ -14,8 +14,8 @@
     "docker:compose-down": "docker-compose down",
     "docker:compose-up": "docker-compose up -d",
     "docker:clean": "docker system prune --volumes -f",
-    "docker:down": "npm run docker:compose-down && npm run docker:clean",
-    "docker:up": "npm run docker:down && npm run dockerize && npm run docker:compose-up"
+    "docker:down": "yarn docker:compose-down && yarn docker:clean",
+    "docker:up": "yarn docker:down && yarn dockerize && yarn docker:compose-up"
   },
   "dependencies": {
     "@date-io/date-fns": "2.14.0",
