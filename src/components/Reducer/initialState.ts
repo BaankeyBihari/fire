@@ -1,30 +1,6 @@
-import {addYears} from 'date-fns';
+import { addYears } from 'date-fns'
 
-export interface Investment {
-    investedAmount: number,
-    currentValue: number,
-    recordDate: Date,
-    tag: string
-}
-
-export interface Inflation {
-    inflation: number,
-    recordDate: Date
-}
-
-export interface State {
-    startDate: Date,
-    retireDate: Date,
-    startingSIP: number,
-    incomeAtMaturity: number,
-    currency: string,
-    expectedAnnualInflation: number,
-    expectedGrowthRate: number,
-    sipGrowthRate: number,
-    investments: Investment[],
-    annualInflation: Inflation[],
-    investmentPlan: Investment[],
-}
+import State from '@components/models/state'
 
 const InitialState: State = {
   startDate: new Date(new Date().toDateString()),
@@ -35,9 +11,9 @@ const InitialState: State = {
   expectedAnnualInflation: 0.0,
   expectedGrowthRate: 0.0,
   sipGrowthRate: 0.0,
-  investments: [],
-  annualInflation: [],
+  investmentList: [],
+  inflationList: [],
   investmentPlan: [],
-};
+}
 
-export default InitialState;
+export default InitialState

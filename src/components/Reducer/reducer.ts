@@ -1,13 +1,15 @@
-import InitialState, {
-  State,
-  Investment,
-  Inflation,
-} from '@components/Reducer/initialState'
+import InitialState from './initialState'
+
+import State from '@components/models/state'
+import InvestmentStep, {
+  DummyInvestmentStep,
+} from '@components/models/investmentStep'
+import InflationStep from '@components/models/inflationStep'
 
 import ActionName, { Action } from '@components/Reducer/actions'
 import { addYears, differenceInCalendarDays } from 'date-fns'
 
-export function compareInvestment(a: Investment, b: Investment) {
+export function compareInvestment(a: InvestmentStep, b: InvestmentStep) {
   if (a.recordDate < b.recordDate) {
     return -1
   }
@@ -29,7 +31,7 @@ export function compareInvestment(a: Investment, b: Investment) {
   return 0
 }
 
-function compareInflation(a: Inflation, b: Inflation) {
+function compareInflation(a: InflationStep, b: InflationStep) {
   if (a.recordDate < b.recordDate) {
     return -1
   }
@@ -39,16 +41,11 @@ function compareInflation(a: Inflation, b: Inflation) {
   return 0
 }
 
-export class DummyInvestment implements Investment {
+export class DummyInvestment implements InvestmentStep {
   investedAmount = 0
   currentValue = 0
   recordDate = new Date()
   tag = ''
-}
-
-export class DummyInflation implements Inflation {
-  inflation = 0
-  recordDate = new Date()
 }
 
 function getFirstDayOfNextMonth(date: Date) {
@@ -60,13 +57,13 @@ function generatePlan(
   startingSIP: number,
   startDate: Date,
   incomeAtMaturity: number,
-  expectedAnnualInflation: number,
+  expectedInflation: number,
   expectedGrowthRate: number,
   sipGrowthRate: number
 ) {
   const limitDate = addYears(startDate, 50)
-  let investmentPlan: Investment[] = []
-  const dailyInflation = expectedAnnualInflation / 36500
+  let investmentPlan: InvestmentStep[] = []
+  const dailyInflation = expectedInflation / 36500
   const dailyGrowthRate = expectedGrowthRate / 36500
   const dailySIPRate = sipGrowthRate / 36500
   let currentSIP = startingSIP
@@ -80,14 +77,14 @@ function generatePlan(
     currentAmount * delta * dailyGrowthRate < currentTarget &&
     nextSIPDate < limitDate
   ) {
-    const currentInvestmentRecord = new DummyInvestment()
+    const currentInvestmentRecord = new DummyInvestmentStep()
     currentInvestmentRecord.currentValue = currentAmount
     currentInvestmentRecord.recordDate = currentSIPDate
     currentInvestmentRecord.investedAmount = currentInvestment
     currentInvestmentRecord.tag = 'Planned'
     investmentPlan = [...investmentPlan, currentInvestmentRecord]
     currentAmount =
-      (currentAmount * delta * dailyGrowthRate) + currentSIP + currentAmount
+      currentAmount * delta * dailyGrowthRate + currentSIP + currentAmount
     currentAmount = parseFloat(currentAmount.toFixed(2))
     currentInvestment += currentSIP
     currentInvestment = parseFloat(currentInvestment.toFixed(2))
@@ -99,7 +96,7 @@ function generatePlan(
     nextSIPDate = getFirstDayOfNextMonth(currentSIPDate)
     delta = differenceInCalendarDays(nextSIPDate, currentSIPDate)
   }
-  const currentInvestmentRecord = new DummyInvestment()
+  const currentInvestmentRecord = new DummyInvestmentStep()
   currentInvestmentRecord.currentValue = currentAmount
   currentInvestmentRecord.recordDate = currentSIPDate
   currentInvestmentRecord.investedAmount = currentInvestment
@@ -124,20 +121,20 @@ export default function Reducer(state: State, action: Action) {
     }
     case ActionName.UPDATE_INFLATION: {
       newState = { ...newState, ...action.payload }
-      newState.annualInflation = newState.annualInflation.map((e) => {
+      newState.inflationList = newState.inflationList.map((e) => {
         e.recordDate = new Date(e.recordDate.toDateString())
         return e
       })
-      newState.annualInflation.sort(compareInflation)
+      newState.inflationList.sort(compareInflation)
       break
     }
     case ActionName.UPDATE_INVESTMENTS: {
       newState = { ...newState, ...action.payload }
-      newState.investments = newState.investments.map((e) => {
+      newState.investmentList = newState.investmentList.map((e) => {
         e.recordDate = new Date(e.recordDate.toDateString())
         return e
       })
-      newState.investments.sort(compareInvestment)
+      newState.investmentList.sort(compareInvestment)
       break
     }
     case ActionName.UPDATE_PLAN: {
@@ -145,7 +142,7 @@ export default function Reducer(state: State, action: Action) {
         startDate,
         startingSIP,
         incomeAtMaturity,
-        expectedAnnualInflation,
+        expectedInflation,
         expectedGrowthRate,
         sipGrowthRate,
       } = action.payload
@@ -153,7 +150,7 @@ export default function Reducer(state: State, action: Action) {
         startingSIP,
         startDate,
         incomeAtMaturity,
-        expectedAnnualInflation,
+        expectedInflation,
         expectedGrowthRate,
         sipGrowthRate
       )

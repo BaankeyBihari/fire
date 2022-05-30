@@ -24,6 +24,8 @@ import FilterListIcon from '@mui/icons-material/FilterList'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Switch from '@mui/material/Switch'
 
+import NestedModal from '@components/Tabs/RecordSample/addItem'
+
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
     return -1
@@ -530,6 +532,11 @@ export default function EnhancedTable() {
         control={<Switch checked={dense} onChange={handleChangeDense} />}
         label="Dense padding"
       />
+      <FormControlLabel
+        control={<Switch checked={dense} onChange={handleChangeDense} />}
+        label="Dense padding"
+      />
+      <NestedModal />
     </Box>
   )
 }
