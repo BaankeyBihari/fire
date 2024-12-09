@@ -18,7 +18,7 @@
     "docker:up": "yarn docker:down && yarn dockerize && yarn docker:compose-up"
   },
   "dependencies": {
-    "@date-io/date-fns": "2.14.0",
+    "@date-io/date-fns": "2.17.0",
     "@emotion/cache": "latest",
     "@emotion/react": "latest",
     "@emotion/server": "latest",
