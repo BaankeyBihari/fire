@@ -2269,10 +2269,10 @@ multipipe@^1.0.2:
     duplexer2 "^0.1.2"
     object-assign "^4.1.0"
 
-namor@2.0.3:
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/namor/-/namor-2.0.3.tgz#a42c5e76f6170f9e2fc4ddfc6d403a881f59350d"
-  integrity sha512-BDDfplXUwxcEK1QAwL0k82VyqYyAa3xdQv24ijfLc+5Zqdm3IyfAIBTCRWhKPbbLncmdvG/vCr9JhrVH9FGpNQ==
+namor@2.0.4:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/namor/-/namor-2.0.4.tgz#4cbc5d8551dcbbdb3710ad33682c6335a1af122b"
+  integrity sha512-fP/nmpFqzoaZk+RGASLktUpC5l7UXcEVuwGNMZ5JQj9RoI5GnYgvIUA3kNAzlgmSyjp5AJNI3mCg7zALESQdCQ==
   dependencies:
     crypto-extra "1.0.1"
 
