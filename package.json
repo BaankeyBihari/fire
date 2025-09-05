@@ -41,7 +41,7 @@
     "yup": "0.32.11"
   },
   "devDependencies": {
-    "@babel/core": "7.18.2",
+    "@babel/core": "7.28.4",
     "@types/node": "17.0.24",
     "@types/react": "18.0.9",
     "@types/react-table": "7.7.12",
