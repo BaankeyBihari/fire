@@ -51,7 +51,7 @@ yarn build
 
 ## What Happens on Push/PR
 
-1. **Tests** run on Node.js 20.x and 22.x
+1. **Tests** run on Node.js 22.x
 2. **TypeScript** checking
 3. **ESLint** validation
 4. **Coverage** generated and uploaded to Codecov

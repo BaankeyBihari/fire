@@ -17,7 +17,7 @@ This project uses GitHub Actions for Continuous Integration and Continuous Deplo
 
 #### 1. Test & Coverage
 
-- **Node.js versions:** 20.x, 22.x (matrix strategy)
+- **Node.js version:** 22.x
 - **Steps:**
   1. Checkout code
   2. Setup Node.js with yarn cache
