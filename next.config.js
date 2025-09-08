@@ -1,5 +1,4 @@
 /** @type {import('next').NextConfig} */
 module.exports = {
-  reactStrictMode: true,
-  jsconfigPaths: true
+  reactStrictMode: true
 };

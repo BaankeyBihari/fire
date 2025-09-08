@@ -1,382 +1,361 @@
-import {AdapterDateFns} from '@mui/x-date-pickers/AdapterDateFns';
-import {DesktopDatePicker, LocalizationProvider} from '@mui/x-date-pickers';
-import {DummyInflation, DummyInvestment} from '@components/Reducer/reducer';
-import * as React from 'react';
+import React, { useState, useMemo } from 'react'
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
+import { DesktopDatePicker, LocalizationProvider } from '@mui/x-date-pickers'
+import {
+  Typography,
+  TextField,
+  Box,
+  Button,
+  Stack,
+  Divider,
+} from '@mui/material'
+import {
+  Done as DoneIcon,
+  RestartAlt as RestartAltIcon,
+} from '@mui/icons-material'
+import { format } from 'date-fns'
 
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
+// Import new UI components
+import { TableWithActions, TagAutocomplete, FormSection } from '../ui'
 
-import ClearIcon from '@mui/icons-material/Clear';
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
-import Autocomplete, {createFilterOptions} from '@mui/material/Autocomplete';
-import DoneIcon from '@mui/icons-material/Done';
-import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import {Inflation, Investment} from '@components/Reducer/initialState';
-import Box from '@mui/material/Box';
+// Import types
+import { Investment, Inflation } from '../../types'
 
-interface TagOptionType {
-  inputValue?: string;
-  tag: string;
+interface TagOption {
+  id: string
+  label: string
+  value: string
 }
 
-const tagsFilter = createFilterOptions<TagOptionType>();
+interface RecordTabProps {
+  investments: Investment[]
+  annualInflation: Inflation[]
+  onUpdateInvestments: (investments: Investment[]) => void
+  onUpdateInflation: (inflation: Inflation[]) => void
+}
 
-export default function Record(props: any) {
-  const {investments, dispatchInvestment, annualInflation, dispatchAnnualInflation} = props;
+const RecordTab: React.FC<RecordTabProps> = ({
+  investments,
+  annualInflation,
+  onUpdateInvestments,
+  onUpdateInflation,
+}) => {
+  // Investment form state
+  const [investmentDate, setInvestmentDate] = useState<Date>(new Date())
+  const [selectedTags, setSelectedTags] = useState<TagOption[]>([])
+  const [investedValue, setInvestedValue] = useState<string>('')
+  const [currentValue, setCurrentValue] = useState<string>('')
 
-  const [recordInvestmentDate, setRecordInvestmentDate] = React.useState(new Date());
+  // Inflation form state
+  const [inflationDate, setInflationDate] = useState<Date>(new Date())
+  const [inflationRate, setInflationRate] = useState<string>('')
 
-  const [recordInflationDate, setRecordInflationDate] = React.useState(new Date());
+  // Available tags from existing investments
+  const availableTags = useMemo(() => {
+    const tags = investments.map((inv) => inv.tag)
+    const uniqueTags = Array.from(new Set(tags))
+    return uniqueTags
+      .filter(
+        (tag) =>
+          tag.toLowerCase() !== 'actual' && tag.toLowerCase() !== 'planned'
+      )
+      .map((tag) => ({ id: tag, label: tag, value: tag }))
+  }, [investments])
 
-  const [tagsAvailable, setTagsAvailable] = React.useState<TagOptionType[] | []>([]);
-  const [newTag, setNewTag] = React.useState<TagOptionType | null>(null);
-
-  const [investedValue, setInvestedValue] = React.useState<string | number>(0);
-
-  const [currentValue, setCurrentValue] = React.useState<string | number>(0);
-
-  const [inflationRate, setInflationRate] = React.useState<string | number>(0);
-
-  const resetInvestmentEntry = () => {
-    setNewTag(null);
-    setInvestedValue(0);
-    setCurrentValue(0);
-    setRecordInvestmentDate(new Date());
-  };
-
-  const disallowedDates = (records: { recordDate: Date }[]) => {
-    const disallowedDatesList = records.map((e) => e.recordDate.toDateString());
-    const _helper = (date: Date) => {
-      return disallowedDatesList.includes(date.toDateString());
-    };
-    return _helper;
-  };
-
-  const resetInflationEntry = () => {
-    setInflationRate(0);
-    setRecordInflationDate(new Date());
-  };
-
-  const addInflation = () => {
-    const ifv = new DummyInflation();
-    if (typeof inflationRate === 'number') {
-      ifv.inflation = inflationRate;
-    }
-    ifv.recordDate = recordInflationDate;
-    dispatchAnnualInflation([...annualInflation, ifv]);
-    resetInflationEntry();
-  };
-
-  const addInvestment = () => {
-    const ivv = new DummyInvestment();
-    if (newTag?.tag) {
-      ivv.tag = newTag?.tag;
-    }
-    if (typeof investedValue === 'number') {
-      ivv.investedAmount = investedValue;
-    }
-    if (typeof currentValue === 'number') {
-      ivv.currentValue = currentValue;
-    }
-    ivv.recordDate = recordInvestmentDate;
-    dispatchInvestment([...investments, ivv]);
-    resetInvestmentEntry();
-  };
-
-  const deleteInvestmentRow = (index: number) => {
-    const iv = [...investments];
-    iv.splice(index, 1);
-    dispatchInvestment(iv);
-  };
-
-  const deleteInflationRow = (index: number) => {
-    const iv = [...annualInflation];
-    iv.splice(index, 1);
-    dispatchAnnualInflation(iv);
-  };
-
-  function onlyUnique(value: any, index: any, self: string | any[]) {
-    return self.indexOf(value) === index;
+  // Check if inflation date already exists
+  const isInflationDateDisabled = (date: Date) => {
+    return annualInflation.some(
+      (inf) => new Date(inf.recordDate).toDateString() === date.toDateString()
+    )
   }
 
-  React.useEffect(() => {
-    console.log('investments', investments, investments.length);
-    const tags = investments.map((e: { tag: any; }) => e.tag).filter(onlyUnique).map((e: any) => {
-      return {tag: e};
-    });
-    setTagsAvailable(tags);
-  }, [investments]);
+  // Reset investment form
+  const resetInvestmentForm = () => {
+    setSelectedTags([])
+    setInvestedValue('')
+    setCurrentValue('')
+    setInvestmentDate(new Date())
+  }
 
-  React.useEffect(() => {
-    console.log('tagsAvailable', tagsAvailable);
-  }, [tagsAvailable]);
+  // Reset inflation form
+  const resetInflationForm = () => {
+    setInflationRate('')
+    setInflationDate(new Date())
+  }
 
-  React.useEffect(() => {
-    console.log('newTag', newTag);
-  }, [newTag]);
+  // Add new investment
+  const addInvestment = () => {
+    if (selectedTags.length === 0 || !investedValue || !currentValue) return
 
-  React.useEffect(() => {
-    console.log('investedValue', investedValue);
-  }, [investedValue]);
+    const newInvestment: Investment = {
+      recordDate: investmentDate,
+      tag: selectedTags[0].value,
+      investedAmount: parseFloat(investedValue),
+      currentValue: parseFloat(currentValue),
+    }
 
-  React.useEffect(() => {
-    console.log('currentValue', currentValue);
-  }, [currentValue]);
+    onUpdateInvestments([...investments, newInvestment])
+    resetInvestmentForm()
+  }
+
+  // Add new inflation record
+  const addInflation = () => {
+    if (!inflationRate || isInflationDateDisabled(inflationDate)) return
+
+    const newInflation: Inflation = {
+      recordDate: inflationDate,
+      inflation: parseFloat(inflationRate),
+    }
+
+    onUpdateInflation([...annualInflation, newInflation])
+    resetInflationForm()
+  }
+
+  // Delete investment
+  const deleteInvestment = (index: number) => {
+    const updatedInvestments = investments.filter((_, i) => i !== index)
+    onUpdateInvestments(updatedInvestments)
+  }
+
+  // Delete inflation record
+  const deleteInflationRecord = (index: number) => {
+    const updatedInflation = annualInflation.filter((_, i) => i !== index)
+    onUpdateInflation(updatedInflation)
+  }
+
+  // Handle tag selection change
+  const handleTagSelectionChange = (
+    selected: Array<{ id: string; label: string; value?: any }>
+  ) => {
+    const tagOptions: TagOption[] = selected.map((option) => ({
+      id: option.id,
+      label: option.label,
+      value: option.value || option.label,
+    }))
+    setSelectedTags(tagOptions)
+  }
+
+  // Create tag option
+  const createTagOption = (
+    inputValue: string
+  ): { id: string; label: string; value?: any } => ({
+    id: inputValue.toLowerCase(),
+    label: inputValue,
+    value: inputValue,
+  })
+
+  // Investment table columns
+  const investmentColumns = [
+    {
+      id: 'recordDate',
+      label: 'Recorded On',
+      format: (value: Date) => format(new Date(value), 'MMM dd, yyyy'),
+    },
+    { id: 'tag', label: 'Tag', align: 'right' as const },
+    {
+      id: 'investedAmount',
+      label: 'Invested',
+      align: 'right' as const,
+      format: (value: number) =>
+        value.toLocaleString('en-US', {
+          style: 'currency',
+          currency: 'USD',
+        }),
+    },
+    {
+      id: 'currentValue',
+      label: 'Current Value',
+      align: 'right' as const,
+      format: (value: number) =>
+        value.toLocaleString('en-US', {
+          style: 'currency',
+          currency: 'USD',
+        }),
+    },
+  ]
+
+  // Inflation table columns
+  const inflationColumns = [
+    {
+      id: 'recordDate',
+      label: 'Recorded On',
+      format: (value: Date) => format(new Date(value), 'MMM dd, yyyy'),
+    },
+    {
+      id: 'inflation',
+      label: 'Inflation Rate (%)',
+      align: 'right' as const,
+      format: (value: number) => `${value}%`,
+    },
+  ]
+
+  // Form validation
+  const isInvestmentFormValid =
+    selectedTags.length > 0 && investedValue && currentValue
+  const isInflationFormValid =
+    inflationRate && !isInflationDateDisabled(inflationDate)
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <Box sx={{width: '100%', marginY: '5px'}}>
-        <Typography variant="h4" component="h3" gutterBottom>
-          Investments
-        </Typography>
-        <TableContainer component={Paper}>
-          <Table aria-label="investment table">
-            <TableHead>
-              <TableRow>
-                <TableCell>Recorded On</TableCell>
-                <TableCell align="right">Tag</TableCell>
-                <TableCell align="right">Invested</TableCell>
-                <TableCell align="right">Current Value</TableCell>
-                <TableCell align="right"></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {investments.map((row: Investment, index: number) => (
-                <TableRow key={index}>
-                  <TableCell component="th" scope="row">
-                    {row.recordDate.toDateString()}
-                  </TableCell>
-                  <TableCell align="right">{row.tag}</TableCell>
-                  <TableCell align="right">{row.investedAmount}</TableCell>
-                  <TableCell align="right">{row.currentValue}</TableCell>
-                  <TableCell align="right">
-                    <ClearIcon
-                      sx={{margin: '10px'}}
-                      onClick={() => {
-                        // console.log("Cliked", index);
-                        deleteInvestmentRow(index);
-                      }}
-                      color="error"
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
-              <TableRow>
-                <TableCell component="th" scope="row">
-                  <DesktopDatePicker
-                    label="Record Date"
-                    inputFormat="MM/dd/yyyy"
-                    value={recordInvestmentDate}
-                    onChange={(d) => {
-                      d && setRecordInvestmentDate(new Date(d.toDateString()));
-                    }}
-                    renderInput={(params) => <TextField
-                      {...params} />}
-                  />
-                </TableCell>
-                <TableCell align="right">
-                  <Autocomplete
-                    value={newTag}
-                    onChange={(event, newValue) => {
-                      if (typeof newValue === 'string') {
-                        setNewTag({
-                          tag: newValue,
-                        });
-                      } else if (newValue && newValue.inputValue) {
-                        // Create a new value from the user input
-                        setNewTag({
-                          tag: newValue.inputValue,
-                        });
-                      } else {
-                        setNewTag(newValue);
-                      }
-                    }}
-                    filterOptions={(options, params) => {
-                      const filtered = tagsFilter(options, params);
+      <Box sx={{ width: '100%', padding: 3 }}>
+        {/* Investments Section */}
+        <FormSection title="Investment Records" variant="outlined" spacing={3}>
+          <TableWithActions
+            columns={investmentColumns}
+            data={investments}
+            onDelete={deleteInvestment}
+            maxHeight={400}
+            emptyMessage="No investment records yet. Add your first investment below."
+          />
 
-                      const {inputValue} = params;
-                      // Suggest the creation of a new value
-                      const isExisting = options.some((option) => inputValue === option.tag);
-                      if (inputValue.trim() !== '' && !isExisting && inputValue.trim().toLowerCase() !== 'actual' && inputValue.trim().toLowerCase() !== 'planned') {
-                        filtered.push({
-                          inputValue,
-                          tag: `Create New: "${inputValue.trim()}"`,
-                        });
-                      }
+          <Divider sx={{ my: 3 }} />
 
-                      return filtered;
-                    }}
-                    selectOnFocus
-                    clearOnBlur
-                    handleHomeEndKeys
-                    id="free-solo-with-text-demo"
-                    options={tagsAvailable}
-                    getOptionLabel={(option) => {
-                      // Value selected with enter, right from the input
-                      if (typeof option === 'string') {
-                        return option;
-                      }
-                      // Add "xxx" option created dynamically
-                      if (option.inputValue) {
-                        return option.inputValue;
-                      }
-                      // Regular option
-                      return option.tag;
-                    }}
-                    renderOption={(props, option) => <li {...props}>{option.tag}</li>}
-                    sx={{width: '100%'}}
-                    freeSolo
-                    renderInput={(params) => (
-                      <TextField {...params} label="Select Tag" />
-                    )}
-                  />
-                </TableCell>
-                <TableCell align="right">
-                  <TextField
-                    sx={{width: '100%'}}
-                    type="number"
-                    variant="outlined"
-                    label="Invested Value"
-                    inputProps={{min: 0}}
-                    value={investedValue}
-                    onChange={(e) => {
-                      if (e.target.value === '') {
-                        setInvestedValue(e.target.value);
-                        return;
-                      }
-                      const value = +e.target.value;
-                      if (value < 0) {
-                        setInvestedValue(0);
-                      } else {
-                        setInvestedValue(value);
-                      }
-                    }}
-                  />
-                </TableCell>
-                <TableCell align="right">
-                  <TextField
-                    sx={{width: '100%'}}
-                    type="number"
-                    variant="outlined"
-                    label="Current Value"
-                    inputProps={{min: 0}}
-                    value={currentValue}
-                    onChange={(e) => {
-                      if (e.target.value === '') {
-                        setCurrentValue(e.target.value);
-                        return;
-                      }
-                      const value = +e.target.value;
-                      if (value < 0) {
-                        setCurrentValue(0);
-                      } else {
-                        setCurrentValue(value);
-                      }
-                    }}
-                  />
-                </TableCell>
-                <TableCell align="right">
-                  <DoneIcon sx={{margin: '10px'}} color={newTag && investedValue !== '' && currentValue !== '' ? 'primary' : 'error'}
-                    onClick={() => {
-                      if (newTag && investedValue !== '' && currentValue !== '') {
-                        addInvestment();
-                      }
-                    }} />
-                  <RestartAltIcon onClick={() => resetInvestmentEntry()} sx={{margin: '10px'}} color="error" />
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Box>
-      <Box sx={{width: '100%', marginY: '5px'}}>
-        <Typography variant="h4" component="h3" gutterBottom>
-          Inflation Rate
-        </Typography>
-        <TableContainer component={Paper}>
-          <Table aria-label="investment table">
-            <TableHead>
-              <TableRow>
-                <TableCell>Recorded On</TableCell>
-                <TableCell align="right">Inflation Rate (%)</TableCell>
-                <TableCell align="right"></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {annualInflation.map((row: Inflation, index: number) => (
-                <TableRow key={index}>
-                  <TableCell component="th" scope="row">
-                    {row.recordDate.toDateString()}
-                  </TableCell>
-                  <TableCell align="right">{row.inflation}</TableCell>
-                  <TableCell align="right">
-                    <ClearIcon
-                      sx={{margin: '10px'}}
-                      onClick={() => {
-                        // console.log("Cliked", index);
-                        deleteInflationRow(index);
-                      }}
-                      color="error"
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
-              <TableRow>
-                <TableCell component="th" scope="row">
-                  <DesktopDatePicker
-                    label="Record Date"
-                    inputFormat="MM/dd/yyyy"
-                    value={recordInflationDate}
-                    shouldDisableDate={disallowedDates(annualInflation)}
-                    onChange={(d) => {
-                      d && setRecordInflationDate(new Date(d.toDateString()));
-                    }}
-                    renderInput={(params) => <TextField
-                      {...params} />}
-                  />
-                </TableCell>
-                <TableCell align="right">
-                  <TextField
-                    sx={{width: '100%'}}
-                    type="number"
-                    variant="outlined"
-                    label="Inflation Rate (%)"
-                    inputProps={{min: 0}}
-                    value={inflationRate}
-                    onChange={(e) => {
-                      if (e.target.value === '') {
-                        setInflationRate(e.target.value);
-                        return;
-                      }
-                      const value = +e.target.value;
-                      if (value < 0) {
-                        setInflationRate(0);
-                      } else {
-                        setInflationRate(value);
-                      }
-                    }}
-                  />
-                </TableCell>
-                <TableCell align="right">
-                  <DoneIcon sx={{margin: '10px'}} color={inflationRate !== '' && !disallowedDates(annualInflation)(recordInflationDate) ? 'primary' : 'error'}
-                    onClick={() => {
-                      if (inflationRate !== '' && !disallowedDates(annualInflation)(recordInflationDate)) {
-                        addInflation();
-                      }
-                    }} />
-                  <RestartAltIcon onClick={() => resetInflationEntry()} sx={{margin: '10px'}} color="error" />
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </TableContainer>
+          <Typography variant="h6" gutterBottom>
+            Add New Investment
+          </Typography>
+
+          <Stack spacing={3}>
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+              <DesktopDatePicker
+                label="Record Date"
+                format="MM/dd/yyyy"
+                value={investmentDate}
+                onChange={(date) => date && setInvestmentDate(date)}
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                  },
+                }}
+              />
+
+              <TagAutocomplete
+                label="Investment Tag"
+                options={availableTags}
+                selectedOptions={selectedTags}
+                onSelectionChange={handleTagSelectionChange}
+                onCreateOption={createTagOption}
+                multiple={false}
+                placeholder="Select or create a tag"
+                sx={{ minWidth: 200 }}
+              />
+            </Stack>
+
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+              <TextField
+                fullWidth
+                label="Invested Amount"
+                type="number"
+                value={investedValue}
+                onChange={(e) => setInvestedValue(e.target.value)}
+                inputProps={{ min: 0, step: 0.01 }}
+                InputProps={{
+                  startAdornment: <span style={{ marginRight: 8 }}>$</span>,
+                }}
+              />
+
+              <TextField
+                fullWidth
+                label="Current Value"
+                type="number"
+                value={currentValue}
+                onChange={(e) => setCurrentValue(e.target.value)}
+                inputProps={{ min: 0, step: 0.01 }}
+                InputProps={{
+                  startAdornment: <span style={{ marginRight: 8 }}>$</span>,
+                }}
+              />
+            </Stack>
+
+            <Stack direction="row" spacing={2} justifyContent="center">
+              <Button
+                variant="contained"
+                startIcon={<DoneIcon />}
+                onClick={addInvestment}
+                disabled={!isInvestmentFormValid}
+              >
+                Add Investment
+              </Button>
+              <Button
+                variant="outlined"
+                startIcon={<RestartAltIcon />}
+                onClick={resetInvestmentForm}
+              >
+                Reset
+              </Button>
+            </Stack>
+          </Stack>
+        </FormSection>
+
+        {/* Inflation Section */}
+        <FormSection title="Inflation Records" variant="outlined" spacing={3}>
+          <TableWithActions
+            columns={inflationColumns}
+            data={annualInflation}
+            onDelete={deleteInflationRecord}
+            maxHeight={300}
+            emptyMessage="No inflation records yet. Add inflation data below."
+          />
+
+          <Divider sx={{ my: 3 }} />
+
+          <Typography variant="h6" gutterBottom>
+            Add New Inflation Record
+          </Typography>
+
+          <Stack spacing={3}>
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+              <DesktopDatePicker
+                label="Record Date"
+                format="MM/dd/yyyy"
+                value={inflationDate}
+                onChange={(date) => date && setInflationDate(date)}
+                shouldDisableDate={isInflationDateDisabled}
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                    error: isInflationDateDisabled(inflationDate),
+                    helperText: isInflationDateDisabled(inflationDate)
+                      ? 'This date already has an inflation record'
+                      : undefined,
+                  },
+                }}
+              />
+
+              <TextField
+                fullWidth
+                label="Inflation Rate"
+                type="number"
+                value={inflationRate}
+                onChange={(e) => setInflationRate(e.target.value)}
+                inputProps={{ min: 0, max: 100, step: 0.1 }}
+                InputProps={{
+                  endAdornment: <span style={{ marginLeft: 8 }}>%</span>,
+                }}
+              />
+            </Stack>
+
+            <Stack direction="row" spacing={2} justifyContent="center">
+              <Button
+                variant="contained"
+                startIcon={<DoneIcon />}
+                onClick={addInflation}
+                disabled={!isInflationFormValid}
+              >
+                Add Inflation Record
+              </Button>
+              <Button
+                variant="outlined"
+                startIcon={<RestartAltIcon />}
+                onClick={resetInflationForm}
+              >
+                Reset
+              </Button>
+            </Stack>
+          </Stack>
+        </FormSection>
       </Box>
     </LocalizationProvider>
-  );
+  )
 }
+
+export default RecordTab

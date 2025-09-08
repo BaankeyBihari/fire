@@ -1,204 +1,257 @@
-import * as React from 'react';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import Box from '@mui/material/Box';
-import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
-import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
-import SummarizeIcon from '@mui/icons-material/Summarize';
-import Reducer from '@components/Reducer/reducer';
-import InitialState, {Inflation, Investment} from '@components/Reducer/initialState';
+import React, { useReducer, useRef, useState } from 'react';
+import { 
+  Tabs, 
+  Tab, 
+  Box, 
+  Stack, 
+  Button, 
+  Typography,
+  Divider 
+} from '@mui/material';
+import {
+  FormatListBulleted as FormatListBulletedIcon,
+  AddShoppingCart as AddShoppingCartIcon,
+  Summarize as SummarizeIcon,
+  Upload as UploadIcon,
+  Download as DownloadIcon,
+} from '@mui/icons-material';
 
-import Plan from '@components/Tabs/plan';
-import Record from '@components/Tabs/record';
-import Status from '@components/Tabs/status';
-import ActionName from '@components/Reducer/actions';
-import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
+// Import reducers and state
+import Reducer from '../Reducer/reducer';
+import InitialState from '../Reducer/initialState';
+import ActionName from '../Reducer/actions';
 
-export default function ColorTabs() {
-  const [tabValue, setTabValue] = React.useState('plan');
-  const [state, dispatch] = React.useReducer(Reducer, InitialState);
+// Import refactored components
+import PlanTab from './plan';
+import RecordTab from './record';
+import StatusTab from './status';
 
-  React.useEffect(() => {
-    console.log('Current State', state);
-  }, [state]);
+// Import hooks
+import { useFileOperations } from '../../hooks';
 
-  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+// Import types
+import { Investment, Inflation, PlanParameters } from '../../types';
+
+const TabsContainer: React.FC = () => {
+  const [tabValue, setTabValue] = useState<'plan' | 'record' | 'status'>('plan');
+  const [state, dispatch] = useReducer(Reducer, InitialState);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Use file operations hook
+  const { importData, exportData, loading, error } = useFileOperations();
+
+  const handleTabChange = (_: React.SyntheticEvent, newValue: 'plan' | 'record' | 'status') => {
     setTabValue(newValue);
   };
 
-  const updatePlan = (
-      startDate: Date,
-      retireDate: Date,
-      startingSIP: number,
-      incomeAtMaturity: number,
-      currency: string,
-      expectedAnnualInflation: number,
-      expectedGrowthRate: number,
-      sipGrowthRate: number,
-  ) => {
+  // Update plan parameters
+  const handleUpdatePlan = (params: PlanParameters) => {
     dispatch({
       actionType: ActionName.UPDATE_PLAN,
-      payload: {
-        startDate,
-        retireDate,
-        startingSIP,
-        incomeAtMaturity,
-        currency,
-        expectedAnnualInflation,
-        expectedGrowthRate,
-        sipGrowthRate,
-      },
+      payload: params,
     });
   };
 
-  const updateInvestments = (
-      investments: Investment[],
-  ) => {
+  // Update investments
+  const handleUpdateInvestments = (investments: Investment[]) => {
     dispatch({
       actionType: ActionName.UPDATE_INVESTMENTS,
-      payload: {
-        investments,
-      },
+      payload: { investments },
     });
   };
 
-  const updateAnualInflation = (
-      annualInflation: Inflation[],
-  ) => {
+  // Update inflation data
+  const handleUpdateInflation = (annualInflation: Inflation[]) => {
     dispatch({
       actionType: ActionName.UPDATE_INFLATION,
-      payload: {
-        annualInflation,
-      },
+      payload: { annualInflation },
     });
   };
 
-  const handleSaveToPC = (jsonData: any, filename: string) => {
-    const fileData = JSON.stringify(jsonData, null, 2);
-    const blob = new Blob([fileData], {type: 'text/plain'});
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.download = `${filename}.json`;
-    link.href = url;
-    link.click();
+  // Handle file import
+  const handleImport = () => {
+    fileInputRef.current?.click();
   };
 
-  const fileField = React.useRef<HTMLInputElement>(null);
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
 
-  const upload = (e: any) => {
-    e.preventDefault();
-    if (fileField.current !== null) {
-      fileField.current.click();
-    }
-  };
+    try {
+      const jsonData = await importData(file);
+      
+      // Parse dates from JSON
+      const parsedData = {
+        ...jsonData,
+        startDate: new Date(jsonData.startDate),
+        retireDate: new Date(jsonData.retireDate),
+        investmentPlan: jsonData.investmentPlan?.map((item: any) => ({
+          ...item,
+          recordDate: new Date(item.recordDate),
+        })) || [],
+        investments: jsonData.investments?.map((item: any) => ({
+          ...item,
+          recordDate: new Date(item.recordDate),
+        })) || [],
+        annualInflation: jsonData.annualInflation?.map((item: any) => ({
+          ...item,
+          recordDate: new Date(item.recordDate),
+        })) || [],
+      };
 
-  const openFile = (evt: any) => {
-    const status = []; // Status output
-    const fileObj = evt.target.files[0];
-    const reader = new FileReader();
-
-    let fileloaded = (e: any) => {
-      // e.target.result is the file's content as text
-      const fileContents = e.target.result;
-      status.push(
-          `File name: "${fileObj.name}". Length: ${fileContents.length} bytes.`,
-      );
-      // Show first 80 characters of the file
-      const jsonData = JSON.parse(fileContents);
-      jsonData.startDate = new Date(jsonData.startDate);
-      jsonData.retireDate = new Date(jsonData.retireDate);
-      jsonData.investmentPlan = jsonData.investmentPlan.map((e: any) => {
-        e.recordDate = new Date(e.recordDate);
-        return e;
-      });
-      jsonData.investments = jsonData.investments.map((e: any) => {
-        e.recordDate = new Date(e.recordDate);
-        return e;
-      });
-      jsonData.annualInflation = jsonData.annualInflation.map((e: any) => {
-        e.recordDate = new Date(e.recordDate);
-        return e;
-      });
       dispatch({
         actionType: ActionName.LOAD,
-        payload: jsonData,
+        payload: parsedData,
       });
-    };
+    } catch (err) {
+      console.error('Failed to import file:', err);
+    }
 
-    // Mainline of the method
-    fileloaded = fileloaded.bind(evt);
-    reader.onload = fileloaded;
-    reader.readAsText(fileObj);
+    // Reset file input
+    event.target.value = '';
   };
 
-  function getDateString() {
-    const date = new Date();
-    const year = date.getFullYear();
-    const month = `${date.getMonth() + 1}`.padStart(2, '0');
-    const day =`${date.getDate()}`.padStart(2, '0');
-    return `${year}${month}${day}`;
-  }
+  // Handle file export
+  const handleExport = () => {
+    const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    const filename = `fire_data_${timestamp}`;
+    exportData(state, filename, 'json');
+  };
+
+  // Create plan parameters object
+  const planParameters: PlanParameters = {
+    startDate: state.startDate,
+    retireDate: state.retireDate,
+    startingSIP: state.startingSIP,
+    incomeAtMaturity: state.incomeAtMaturity,
+    currency: state.currency,
+    expectedAnnualInflation: state.expectedAnnualInflation,
+    expectedGrowthRate: state.expectedGrowthRate,
+    sipGrowthRate: state.sipGrowthRate,
+  };
 
   return (
-    <>
-      <Stack spacing={2} direction="row">
-        <Button variant="outlined" onClick={upload}>Import</Button>
-        <input
-          type="file"
-          style={{display: 'none'}}
-          multiple={false}
-          accept=".json,application/json"
-          onChange={(evt) => openFile(evt)}
-          ref={fileField}
-        />
-        <Button variant="outlined" onClick={() => {
-          handleSaveToPC(state, `fire_${getDateString()}`);
-        }}>Export</Button>
-      </Stack>
-      <Box sx={{width: '100%'}}>
-        <Tabs
-          value={tabValue}
-          onChange={handleChange}
-          textColor="secondary"
-          indicatorColor="secondary"
-          aria-label="plan, organize and status"
-          centered
-          variant="fullWidth"
+    <Box sx={{ width: '100%', minHeight: '100vh', bgcolor: 'background.default' }}>
+      <Box sx={{ p: 3 }}>
+        {/* Header with import/export */}
+        <Stack 
+          direction="row" 
+          spacing={2} 
+          justifyContent="space-between" 
+          alignItems="center"
+          sx={{ mb: 3 }}
         >
-          <Tab value="plan" label="Make Plan" icon={<FormatListBulletedIcon />} iconPosition="start" />
-          <Tab value="record" label="Record Events" icon={<AddShoppingCartIcon />} iconPosition="start" />
-          <Tab value="status" label="Status" icon={<SummarizeIcon />} iconPosition="start" />
-        </Tabs>
+          <Typography variant="h4" component="h1" color="primary">
+            FIRE Planning Dashboard
+          </Typography>
+          
+          <Stack direction="row" spacing={2}>
+            <Button
+              variant="outlined"
+              startIcon={<UploadIcon />}
+              onClick={handleImport}
+              disabled={loading}
+            >
+              Import Data
+            </Button>
+            <Button
+              variant="outlined"
+              startIcon={<DownloadIcon />}
+              onClick={handleExport}
+              disabled={loading}
+            >
+              Export Data
+            </Button>
+          </Stack>
+        </Stack>
+
+        {/* Hidden file input */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".json,application/json"
+          onChange={handleFileSelect}
+          style={{ display: 'none' }}
+        />
+
+        {/* Error display */}
+        {error && (
+          <Box sx={{ mb: 2, p: 2, bgcolor: 'error.light', borderRadius: 1 }}>
+            <Typography color="error.contrastText">
+              {error}
+            </Typography>
+          </Box>
+        )}
+
+        <Divider sx={{ mb: 3 }} />
+
+        {/* Tab Navigation */}
+        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+          <Tabs
+            value={tabValue}
+            onChange={handleTabChange}
+            textColor="primary"
+            indicatorColor="primary"
+            variant="fullWidth"
+            sx={{
+              '& .MuiTab-root': {
+                textTransform: 'none',
+                fontSize: '1rem',
+                fontWeight: 500,
+              },
+            }}
+          >
+            <Tab
+              value="plan"
+              label="Make Plan"
+              icon={<FormatListBulletedIcon />}
+              iconPosition="start"
+              sx={{ gap: 1 }}
+            />
+            <Tab
+              value="record"
+              label="Record Events"
+              icon={<AddShoppingCartIcon />}
+              iconPosition="start"
+              sx={{ gap: 1 }}
+            />
+            <Tab
+              value="status"
+              label="Status & Analytics"
+              icon={<SummarizeIcon />}
+              iconPosition="start"
+              sx={{ gap: 1 }}
+            />
+          </Tabs>
+        </Box>
+
+        {/* Tab Content */}
+        <Box>
+          {tabValue === 'plan' && (
+            <PlanTab
+              planParameters={planParameters}
+              onUpdatePlan={handleUpdatePlan}
+            />
+          )}
+          
+          {tabValue === 'record' && (
+            <RecordTab
+              investments={state.investments}
+              annualInflation={state.annualInflation}
+              onUpdateInvestments={handleUpdateInvestments}
+              onUpdateInflation={handleUpdateInflation}
+            />
+          )}
+          
+          {tabValue === 'status' && (
+            <StatusTab
+              investments={state.investments}
+            />
+          )}
+        </Box>
       </Box>
-      {tabValue == 'plan' ?
-        <Plan
-          startDate={state.startDate}
-          retireDate={state.retireDate}
-          startingSIP={state.startingSIP}
-          incomeAtMaturity={state.incomeAtMaturity}
-          currency={state.currency}
-          expectedAnnualInflation={state.expectedAnnualInflation}
-          expectedGrowthRate={state.expectedGrowthRate}
-          sipGrowthRate={state.sipGrowthRate}
-          dispatch={updatePlan}
-        /> : null
-      }
-      {tabValue == 'record' ?
-        <Record
-          investments={state.investments}
-          dispatchInvestment={updateInvestments}
-          annualInflation={state.annualInflation}
-          dispatchAnnualInflation={updateAnualInflation}
-        /> : null
-      }
-      {tabValue == 'status' ?
-        <Status
-          investments={state.investments}
-          annualInflation={state.annualInflation}
-          investmentPlan={state.investmentPlan}
-        /> : null
-      }
-    </>
+    </Box>
   );
-}
+};
+
+export default TabsContainer;

@@ -1,166 +1,220 @@
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import {useFormik} from 'formik';
+import React from 'react';
+import { Box, TextField, Button, Stack } from '@mui/material';
+import { useFormik } from 'formik';
 import * as yup from 'yup';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import {AdapterDateFns} from '@mui/x-date-pickers/AdapterDateFns';
-import {LocalizationProvider} from '@mui/x-date-pickers';
-import {DesktopDatePicker} from '@mui/x-date-pickers/DesktopDatePicker';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
+
+// Import new UI components
+import { FormSection } from '../ui';
+
+// Import types
+import { PlanParameters } from '../../types';
 
 const validationSchema = yup.object().shape({
-  startDate: yup
-      .date(),
-  retireDate: yup
-      .date(),
-  startingSIP: yup.number().min(0),
-  incomeAtMaturity: yup.number().min(0),
-  expectedAnnualInflation: yup.number().min(0),
-  expectedGrowthRate: yup.number().min(yup.ref('expectedAnnualInflation'), 'Growth Rate needs to be more than Inflation Rate'),
-  sipGrowthRate: yup.number().min(0),
+  startDate: yup.date().required('Start date is required'),
+  retireDate: yup.date().required('Retire date is required'),
+  startingSIP: yup
+    .number()
+    .min(0, 'Starting SIP must be positive')
+    .required('Starting SIP is required'),
+  incomeAtMaturity: yup
+    .number()
+    .min(0, 'Income at maturity must be positive')
+    .required('Income at maturity is required'),
+  expectedAnnualInflation: yup
+    .number()
+    .min(0, 'Inflation rate must be positive')
+    .max(100, 'Inflation rate cannot exceed 100%')
+    .required('Expected annual inflation is required'),
+  expectedGrowthRate: yup
+    .number()
+    .min(
+      yup.ref('expectedAnnualInflation'),
+      'Growth rate should be higher than inflation rate'
+    )
+    .max(100, 'Growth rate cannot exceed 100%')
+    .required('Expected growth rate is required'),
+  sipGrowthRate: yup
+    .number()
+    .min(0, 'SIP growth rate must be positive')
+    .max(100, 'SIP growth rate cannot exceed 100%')
+    .required('SIP growth rate is required'),
+  currency: yup.string().required('Currency is required'),
 });
 
-export default function Plan(props: any) {
-  const {
-    startDate,
-    retireDate,
-    incomeAtMaturity,
-    currency,
-    expectedAnnualInflation,
-    expectedGrowthRate,
-    startingSIP,
-    sipGrowthRate,
-    dispatch,
-  } = props;
+interface PlanTabProps {
+  planParameters: PlanParameters;
+  onUpdatePlan: (params: PlanParameters) => void;
+}
 
-  const formik = useFormik({
+const PlanTab: React.FC<PlanTabProps> = ({ planParameters, onUpdatePlan }) => {
+  const formik = useFormik<PlanParameters>({
     enableReinitialize: true,
     initialValues: {
-      startDate: startDate,
-      retireDate: retireDate,
-      incomeAtMaturity: incomeAtMaturity,
-      currency: currency,
-      expectedAnnualInflation: expectedAnnualInflation,
-      expectedGrowthRate: expectedGrowthRate,
-      startingSIP: startingSIP,
-      sipGrowthRate: sipGrowthRate,
+      startDate: planParameters.startDate,
+      retireDate: planParameters.retireDate,
+      incomeAtMaturity: planParameters.incomeAtMaturity,
+      currency: planParameters.currency,
+      expectedAnnualInflation: planParameters.expectedAnnualInflation,
+      expectedGrowthRate: planParameters.expectedGrowthRate,
+      startingSIP: planParameters.startingSIP,
+      sipGrowthRate: planParameters.sipGrowthRate,
     },
-    validationSchema: validationSchema,
+    validationSchema,
     onSubmit: (values) => {
-      // alert(JSON.stringify(values, null, 2));
-      console.log('values', values);
-      const {
-        startDate,
-        retireDate,
-        startingSIP,
-        incomeAtMaturity,
-        currency,
-        expectedAnnualInflation,
-        expectedGrowthRate,
-        sipGrowthRate} = values;
-      dispatch(
-          startDate,
-          retireDate,
-          parseFloat(startingSIP),
-          parseFloat(incomeAtMaturity),
-          currency,
-          parseFloat(expectedAnnualInflation),
-          parseFloat(expectedGrowthRate),
-          parseFloat(sipGrowthRate));
+      console.log('Plan values submitted:', values);
+      onUpdatePlan(values);
     },
   });
 
+  const { values, errors, touched, handleChange, handleSubmit, setFieldValue } = formik;
+
+  const getErrorText = (field: keyof PlanParameters) => {
+    const error = errors[field];
+    return touched[field] && error ? String(error) : undefined;
+  };
+
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <Box sx={{width: '300px', paddingTop: '10px', margin: '20px'}}>
-        <form onSubmit={formik.handleSubmit}>
-          <Box sx={{width: '100%', paddingTop: '10px', margin: '20px'}}>
-            <DesktopDatePicker
-              label="Start Date"
-              inputFormat="MM/dd/yyyy"
-              value={formik.values.startDate}
-              onChange={(date) => formik.setFieldValue('startDate', new Date(date.toDateString()))}
-              renderInput={(params) => <TextField
-                {...params}
-                error={formik.touched.startDate && Boolean(formik.errors.startDate)}
-                helperText={formik.touched.startDate && formik.errors.startDate.toString()}
-              />}
-            />
+      <Box sx={{ maxWidth: 600, margin: '0 auto', padding: 3 }}>
+        <form onSubmit={handleSubmit}>
+          <FormSection title="Investment Timeline" variant="card" spacing={3}>
+            <Stack spacing={3}>
+              <DesktopDatePicker
+                label="Start Date"
+                format="MM/dd/yyyy"
+                value={values.startDate}
+                onChange={(date) => setFieldValue('startDate', date)}
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                    error: touched.startDate && Boolean(errors.startDate),
+                    helperText: getErrorText('startDate'),
+                  },
+                }}
+              />
+              <DesktopDatePicker
+                label="Retirement Date"
+                format="MM/dd/yyyy"
+                value={values.retireDate}
+                onChange={(date) => setFieldValue('retireDate', date)}
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                    error: touched.retireDate && Boolean(errors.retireDate),
+                    helperText: getErrorText('retireDate'),
+                  },
+                }}
+              />
+            </Stack>
+          </FormSection>
+
+          <FormSection title="Investment Parameters" variant="card" spacing={3}>
+            <Stack spacing={3}>
+              <TextField
+                fullWidth
+                id="startingSIP"
+                name="startingSIP"
+                label="Starting SIP Amount"
+                type="number"
+                value={values.startingSIP}
+                onChange={handleChange}
+                error={touched.startingSIP && Boolean(errors.startingSIP)}
+                helperText={getErrorText('startingSIP')}
+                InputProps={{
+                  startAdornment: <span style={{ marginRight: 8 }}>{values.currency}</span>,
+                }}
+              />
+              <TextField
+                fullWidth
+                id="incomeAtMaturity"
+                name="incomeAtMaturity"
+                label="Target Income at Retirement"
+                type="number"
+                value={values.incomeAtMaturity}
+                onChange={handleChange}
+                error={touched.incomeAtMaturity && Boolean(errors.incomeAtMaturity)}
+                helperText={getErrorText('incomeAtMaturity')}
+                InputProps={{
+                  startAdornment: <span style={{ marginRight: 8 }}>{values.currency}</span>,
+                }}
+              />
+              <TextField
+                fullWidth
+                id="currency"
+                name="currency"
+                label="Currency"
+                value={values.currency}
+                onChange={handleChange}
+                error={touched.currency && Boolean(errors.currency)}
+                helperText={getErrorText('currency')}
+              />
+              <TextField
+                fullWidth
+                id="sipGrowthRate"
+                name="sipGrowthRate"
+                label="SIP Annual Step-up Rate (%)"
+                type="number"
+                value={values.sipGrowthRate}
+                onChange={handleChange}
+                error={touched.sipGrowthRate && Boolean(errors.sipGrowthRate)}
+                helperText={getErrorText('sipGrowthRate')}
+                InputProps={{
+                  endAdornment: <span style={{ marginLeft: 8 }}>%</span>,
+                }}
+              />
+            </Stack>
+          </FormSection>
+
+          <FormSection title="Market Assumptions" variant="card" spacing={3}>
+            <Stack spacing={3}>
+              <TextField
+                fullWidth
+                id="expectedAnnualInflation"
+                name="expectedAnnualInflation"
+                label="Expected Annual Inflation (%)"
+                type="number"
+                value={values.expectedAnnualInflation}
+                onChange={handleChange}
+                error={touched.expectedAnnualInflation && Boolean(errors.expectedAnnualInflation)}
+                helperText={getErrorText('expectedAnnualInflation')}
+                InputProps={{
+                  endAdornment: <span style={{ marginLeft: 8 }}>%</span>,
+                }}
+              />
+              <TextField
+                fullWidth
+                id="expectedGrowthRate"
+                name="expectedGrowthRate"
+                label="Expected Growth Rate (%)"
+                type="number"
+                value={values.expectedGrowthRate}
+                onChange={handleChange}
+                error={touched.expectedGrowthRate && Boolean(errors.expectedGrowthRate)}
+                helperText={getErrorText('expectedGrowthRate')}
+                InputProps={{
+                  endAdornment: <span style={{ marginLeft: 8 }}>%</span>,
+                }}
+              />
+            </Stack>
+          </FormSection>
+
+          <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
+            <Button
+              type="submit"
+              variant="contained"
+              size="large"
+              sx={{ minWidth: 200, py: 1.5 }}
+            >
+              Update Plan
+            </Button>
           </Box>
-          <Box sx={{width: '100%', paddingTop: '10px', margin: '20px'}}>
-            <DesktopDatePicker
-              disabled
-              label="Retire Date"
-              inputFormat="MM/dd/yyyy"
-              value={formik.values.retireDate}
-              onChange={(date) => formik.setFieldValue('retireDate', new Date(date.toDateString()))}
-              renderInput={(params) => <TextField
-                {...params}
-                error={formik.touched.retireDate && Boolean(formik.errors.retireDate)}
-                helperText={formik.touched.retireDate && formik.errors.retireDate.toString()}
-              />}
-            />
-          </Box>
-          <TextField
-            sx={{width: '100%', marginTop: '20px', marginBottom: '20px'}}
-            fullWidth
-            id="startingSIP"
-            name="startingSIP"
-            label="Starting SIP"
-            value={formik.values.startingSIP}
-            onChange={formik.handleChange}
-            error={formik.touched.startingSIP && Boolean(formik.errors.startingSIP)}
-            helperText={formik.touched.startingSIP && formik.errors.startingSIP.toString()}
-          />
-          <TextField
-            sx={{width: '100%', marginTop: '20px', marginBottom: '20px'}}
-            fullWidth
-            id="incomeAtMaturity"
-            name="incomeAtMaturity"
-            label="Income At Maturity"
-            value={formik.values.incomeAtMaturity}
-            onChange={formik.handleChange}
-            error={formik.touched.incomeAtMaturity && Boolean(formik.errors.incomeAtMaturity)}
-            helperText={formik.touched.incomeAtMaturity && formik.errors.incomeAtMaturity.toString()}
-          />
-          <TextField
-            sx={{width: '100%', marginTop: '20px', marginBottom: '20px'}}
-            fullWidth
-            id="expectedAnnualInflation"
-            name="expectedAnnualInflation"
-            label="Expected Annual Inflation"
-            value={formik.values.expectedAnnualInflation}
-            onChange={formik.handleChange}
-            error={formik.touched.expectedAnnualInflation && Boolean(formik.errors.expectedAnnualInflation)}
-            helperText={formik.touched.expectedAnnualInflation && formik.errors.expectedAnnualInflation.toString()}
-          />
-          <TextField
-            sx={{width: '100%', marginTop: '20px', marginBottom: '20px'}}
-            fullWidth
-            id="expectedGrowthRate"
-            name="expectedGrowthRate"
-            label="Expected Growth Rate"
-            value={formik.values.expectedGrowthRate}
-            onChange={formik.handleChange}
-            error={formik.touched.expectedGrowthRate && Boolean(formik.errors.expectedGrowthRate)}
-            helperText={formik.touched.expectedGrowthRate && formik.errors.expectedGrowthRate.toString()}
-          />
-          <TextField
-            sx={{width: '100%', marginTop: '20px', marginBottom: '20px'}}
-            fullWidth
-            id="sipGrowthRate"
-            name="sipGrowthRate"
-            label="SIP Annual Stepup Rate"
-            value={formik.values.sipGrowthRate}
-            onChange={formik.handleChange}
-            error={formik.touched.sipGrowthRate && Boolean(formik.errors.sipGrowthRate)}
-            helperText={formik.touched.sipGrowthRate && formik.errors.sipGrowthRate.toString()}
-          />
-          <Button color="primary" variant="contained" fullWidth type="submit">
-            PLAN
-          </Button>
         </form>
       </Box>
     </LocalizationProvider>
   );
-}
+};
+
+export default PlanTab;

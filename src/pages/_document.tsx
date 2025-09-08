@@ -63,9 +63,9 @@ MyDocument.getInitialProps = async (ctx) => {
   ctx.renderPage = () =>
     originalRenderPage({
       enhanceApp: (App: any) =>
-        function EnhanceApp(props) {
+        (function EnhanceApp(props) {
           return <App emotionCache={cache} {...props} />;
-        },
+        }),
     });
 
   const initialProps = await Document.getInitialProps(ctx);
@@ -76,7 +76,7 @@ MyDocument.getInitialProps = async (ctx) => {
     <style
       data-emotion={`${style.key} ${style.ids.join(' ')}`}
       key={style.key}
-      // eslint-disable-next-line react/no-danger
+       
       dangerouslySetInnerHTML={{__html: style.css}}
     />
   ));
