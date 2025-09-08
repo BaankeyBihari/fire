@@ -56,12 +56,22 @@ jobs:
         uses: codecov/test-results-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./test-results/junit.xml
+          flags: unittests
 
       - name: Upload coverage artifacts
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
           path: coverage/
+          retention-days: 30
+
+      - name: Upload test results artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: test-results/
           retention-days: 30
 
   build:

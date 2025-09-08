@@ -33,6 +33,15 @@ const customJestConfig = {
             statements: 50,
         },
     },
+    reporters: [
+        'default',
+        ['jest-junit', {
+            outputDirectory: 'test-results',
+            outputName: 'junit.xml',
+            suiteName: 'Jest Tests',
+            includeConsoleOutput: false,
+        }],
+    ],
     testMatch: [
         '<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}',
         '<rootDir>/src/**/*.{test,spec}.{js,jsx,ts,tsx}',
