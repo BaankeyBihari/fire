@@ -12,26 +12,26 @@ coverage:
         base: auto
 
 comment:
-  layout: "reach,diff,flags,tree,reach"
+  layout: 'reach,diff,flags,tree,reach'
   behavior: default
   require_changes: false
 
 ignore:
-  - "src/**/__tests__/**"
-  - "src/**/*.test.ts"
-  - "src/**/*.test.tsx"
-  - "src/**/*.spec.ts"
-  - "src/**/*.spec.tsx"
-  - "src/pages/_app.tsx"
-  - "src/pages/_document.tsx"
-  - "src/types/**"
-  - "**/*.d.ts"
-  - "jest.config.js"
-  - "jest.setup.js"
-  - "next.config.js"
-  - ".next/**"
-  - "coverage/**"
-  - "node_modules/**"
+  - 'src/**/__tests__/**'
+  - 'src/**/*.test.ts'
+  - 'src/**/*.test.tsx'
+  - 'src/**/*.spec.ts'
+  - 'src/**/*.spec.tsx'
+  - 'src/pages/_app.tsx'
+  - 'src/pages/_document.tsx'
+  - 'src/types/**'
+  - '**/*.d.ts'
+  - 'jest.config.js'
+  - 'jest.setup.js'
+  - 'next.config.js'
+  - '.next/**'
+  - 'coverage/**'
+  - 'node_modules/**'
 
 flags:
   unittests:

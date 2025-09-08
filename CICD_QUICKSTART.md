@@ -15,6 +15,7 @@
 ### 2. Ready to Go! 🚀
 
 Your CI/CD pipeline will now:
+
 - ✅ Run tests on every push and PR
 - ✅ Generate code coverage reports
 - ✅ Upload coverage to Codecov
@@ -24,6 +25,7 @@ Your CI/CD pipeline will now:
 ## Coverage Badge
 
 Add this to your README.md:
+
 ```markdown
 [![codecov](https://codecov.io/gh/BaankeyBihari/fire/branch/main/graph/badge.svg)](https://codecov.io/gh/BaankeyBihari/fire)
 ```
@@ -49,9 +51,9 @@ yarn build
 
 ## What Happens on Push/PR
 
-1. **Tests** run on Node.js 18.x and 20.x
+1. **Tests** run on Node.js 20.x and 22.x
 2. **TypeScript** checking
-3. **ESLint** validation  
+3. **ESLint** validation
 4. **Coverage** generated and uploaded to Codecov
 5. **Security audit** performed
 6. **Application build** verified

@@ -9,13 +9,15 @@ This project uses GitHub Actions for Continuous Integration and Continuous Deplo
 ### Main CI/CD Pipeline (`.github/workflows/ci.yml`)
 
 **Triggers:**
+
 - Push to `main` or `develop` branches
 - Pull requests targeting `main` or `develop` branches
 
 **Jobs:**
 
 #### 1. Test & Coverage
-- **Node.js versions:** 18.x, 20.x (matrix strategy)
+
+- **Node.js versions:** 20.x, 22.x (matrix strategy)
 - **Steps:**
   1. Checkout code
   2. Setup Node.js with yarn cache
@@ -27,6 +29,7 @@ This project uses GitHub Actions for Continuous Integration and Continuous Deplo
   8. Upload coverage artifacts
 
 #### 2. Build Application
+
 - **Depends on:** Test job completion
 - **Steps:**
   1. Checkout code
@@ -36,6 +39,7 @@ This project uses GitHub Actions for Continuous Integration and Continuous Deplo
   5. Upload build artifacts
 
 #### 3. Security Audit
+
 - **Runs in parallel with test job**
 - **Steps:**
   1. Run `yarn audit --level moderate`
@@ -44,6 +48,7 @@ This project uses GitHub Actions for Continuous Integration and Continuous Deplo
 ## Code Coverage
 
 ### Codecov Integration
+
 - **Service:** [Codecov](https://codecov.io/)
 - **Configuration:** `codecov.yml`
 - **Coverage targets:**
@@ -51,6 +56,7 @@ This project uses GitHub Actions for Continuous Integration and Continuous Deplo
   - Patch: 60% with 5% threshold
 
 ### Jest Coverage Configuration
+
 - **Coverage directory:** `coverage/`
 - **Reporters:** text, lcov, json, html
 - **Thresholds:**
@@ -60,6 +66,7 @@ This project uses GitHub Actions for Continuous Integration and Continuous Deplo
   - Branches: 60%
 
 ### Excluded from coverage:
+
 - Test files (`**/*.test.*`, `**/*.spec.*`)
 - Test directories (`**/__tests__/**`)
 - Next.js app files (`_app.tsx`, `_document.tsx`)
@@ -69,6 +76,7 @@ This project uses GitHub Actions for Continuous Integration and Continuous Deplo
 ## Setup Instructions
 
 ### 1. Codecov Setup
+
 1. Go to [codecov.io](https://codecov.io/)
 2. Sign up/in with your GitHub account
 3. Add your repository
@@ -80,11 +88,15 @@ This project uses GitHub Actions for Continuous Integration and Continuous Deplo
    - Value: Your Codecov token
 
 ### 2. GitHub Repository Secrets
+
 Required secrets:
+
 - `CODECOV_TOKEN`: Your Codecov repository token
 
 ### 3. Branch Protection Rules (Recommended)
+
 Set up branch protection for `main` branch:
+
 1. Go to repository Settings → Branches
 2. Add rule for `main` branch
 3. Enable:
@@ -96,6 +108,7 @@ Set up branch protection for `main` branch:
 ## Local Development
 
 ### Running Tests with Coverage
+
 ```bash
 # Run tests with coverage
 yarn test:coverage
@@ -108,24 +121,29 @@ yarn validate
 ```
 
 ### Viewing Coverage Reports
+
 After running `yarn test:coverage`:
+
 - Open `coverage/lcov-report/index.html` in browser
 - Or check terminal output for summary
 
 ## Workflow Features
 
 ### Performance Optimizations
+
 - **Concurrency:** Cancels previous runs when new commits are pushed
 - **Caching:** Uses yarn cache for faster dependency installation
 - **Matrix Strategy:** Tests across multiple Node.js versions
 - **Parallel Jobs:** Security audit runs in parallel with tests
 
 ### Artifact Management
+
 - **Coverage reports:** Retained for 30 days
 - **Build artifacts:** Retained for 7 days
 - **Automatic cleanup:** Old artifacts are automatically removed
 
 ### Error Handling
+
 - **Fail-safe:** Security audit continues on error
 - **Coverage upload:** Doesn't fail CI if Codecov is unavailable
 - **Verbose logging:** Detailed output for debugging
@@ -133,16 +151,19 @@ After running `yarn test:coverage`:
 ## Monitoring & Maintenance
 
 ### Coverage Trends
+
 - Monitor coverage trends in Codecov dashboard
 - Set up Codecov integrations for Slack/email notifications
 - Review coverage comments on pull requests
 
 ### Performance Monitoring
+
 - Monitor CI run times in GitHub Actions
 - Review artifact storage usage
 - Update Node.js versions in matrix as needed
 
 ### Dependencies
+
 - Automated dependency review on pull requests
 - Regular security audits
 - Update action versions periodically
@@ -152,21 +173,25 @@ After running `yarn test:coverage`:
 ### Common Issues
 
 #### Coverage Upload Fails
+
 - Check `CODECOV_TOKEN` secret is set correctly
 - Verify Codecov repository is configured
 - Check if `coverage/lcov.info` file exists
 
 #### Tests Fail in CI but Pass Locally
+
 - Check Node.js version compatibility
 - Verify environment variables
 - Check for timezone/locale differences
 
 #### Build Fails
+
 - Check TypeScript errors
 - Verify all dependencies are in `package.json`
 - Check for Next.js configuration issues
 
 ### Debug Commands
+
 ```bash
 # Run same commands as CI locally
 yarn install --frozen-lockfile
@@ -182,6 +207,7 @@ yarn audit --level moderate
 ## Integration with Git Hooks
 
 The CI/CD pipeline complements local git hooks:
+
 - **Pre-commit:** Local validation (typecheck, lint, test)
 - **CI/CD:** Comprehensive testing across environments
 - **Both:** Ensure code quality at multiple stages
