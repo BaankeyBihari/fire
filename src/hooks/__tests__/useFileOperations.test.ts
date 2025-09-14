@@ -1,9 +1,44 @@
 import { renderHook, act } from '@testing-library/react'
 import { useFileOperations, useLocalStorage } from '../useFileOperations'
+import React from 'react'
 
-// Mock URL.createObjectURL and revokeObjectURL
-global.URL.createObjectURL = jest.fn(() => 'mock-url')
-global.URL.revokeObjectURL = jest.fn()
+// Wrapper component to provide proper container
+const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    return React.createElement('div', {}, children)
+}
+
+// Set up DOM environment before tests
+beforeAll(() => {
+    // Create a proper container element
+    const container = document.createElement('div')
+    container.setAttribute('id', 'root')
+    document.body.appendChild(container)
+
+    // Setup additional DOM globals
+    Object.defineProperty(window, 'URL', {
+        value: {
+            createObjectURL: jest.fn(() => 'mock-url'),
+            revokeObjectURL: jest.fn(),
+        },
+        writable: true,
+    })
+
+    // Initialize mock localStorage
+    localStorageMock = {
+        getItem: jest.fn(),
+        setItem: jest.fn(),
+        removeItem: jest.fn(),
+        clear: jest.fn(),
+    }
+    Object.defineProperty(window, 'localStorage', {
+        value: localStorageMock,
+        writable: true,
+    })
+})
+
+// Mock URL.createObjectURL and revokeObjectURL - these will be set in beforeAll
+let mockCreateObjectURL: jest.Mock
+let mockRevokeObjectURL: jest.Mock
 
 // Mock document methods
 const mockClick = jest.fn()
@@ -30,16 +65,13 @@ Object.defineProperty(document.body, 'removeChild', {
     value: mockRemoveChild
 })
 
-// Mock localStorage
-const localStorageMock = {
-    getItem: jest.fn(),
-    setItem: jest.fn(),
-    removeItem: jest.fn(),
-    clear: jest.fn(),
+// Mock localStorage - will be available via beforeAll setup
+let localStorageMock: {
+    getItem: jest.Mock
+    setItem: jest.Mock
+    removeItem: jest.Mock
+    clear: jest.Mock
 }
-Object.defineProperty(window, 'localStorage', {
-    value: localStorageMock
-})
 
 // Mock File.text() method
 global.File = jest.fn().mockImplementation(() => ({
