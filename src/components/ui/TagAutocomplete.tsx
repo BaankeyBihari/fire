@@ -62,10 +62,20 @@ export const TagAutocomplete: React.FC<TagAutocompleteProps> = ({
 }) => {
   const [inputValue, setInputValue] = useState('')
 
-  const handleChange = (_: any, newValue: (Option | string)[]) => {
+  const handleChange = (
+    _: any,
+    newValue: (Option | string)[] | Option | string | null
+  ) => {
     const processedOptions: Option[] = []
 
-    newValue.forEach((item) => {
+    // Convert to array format for consistent processing
+    const valueArray = Array.isArray(newValue)
+      ? newValue
+      : newValue
+        ? [newValue]
+        : []
+
+    valueArray.forEach((item) => {
       if (typeof item === 'string') {
         // Handle string input for free solo mode
         if (onCreateOption && item.trim()) {
@@ -173,22 +183,29 @@ export const TagAutocomplete: React.FC<TagAutocompleteProps> = ({
         renderInput={renderInput}
         renderOption={renderOption}
         renderTags={(tagValue, getTagProps) =>
-          tagValue.slice(0, maxTags || tagValue.length).map((option, index) => (
-            <Chip
-              {...getTagProps({ index })}
-              key={typeof option === 'string' ? option : option.id}
-              label={typeof option === 'string' ? option : option.label}
-              size="small"
-              variant="outlined"
-              sx={{
-                maxWidth: '200px',
-                '& .MuiChip-label': {
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                },
-              }}
-            />
-          ))
+          tagValue.slice(0, maxTags || tagValue.length).map((option, index) => {
+            const safeOption = option as Option | string
+            return (
+              <Chip
+                {...getTagProps({ index })}
+                key={
+                  typeof safeOption === 'string' ? safeOption : safeOption.id
+                }
+                label={
+                  typeof safeOption === 'string' ? safeOption : safeOption.label
+                }
+                size="small"
+                variant="outlined"
+                sx={{
+                  maxWidth: '200px',
+                  '& .MuiChip-label': {
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  },
+                }}
+              />
+            )
+          })
         }
         disabled={disabled}
         disableCloseOnSelect={multiple}
