@@ -1228,7 +1228,7 @@
   dependencies:
     "@babel/runtime" "^7.28.3"
 
-"@mui/utils@^7.3.1", "@mui/utils@^7.3.2":
+"@mui/utils@^7.3.2":
   version "7.3.2"
   resolved "https://registry.yarnpkg.com/@mui/utils/-/utils-7.3.2.tgz#361775d72c557a03115150e8aec4329c7ef14563"
   integrity sha512-4DMWQGenOdLnM3y/SdFQFwKsCLM+mqxzvoWp9+x2XdEzXapkznauHLiXtSohHs/mc0+5/9UACt1GdugCX2te5g==
@@ -1240,26 +1240,26 @@
     prop-types "^15.8.1"
     react-is "^19.1.1"
 
-"@mui/x-date-pickers@8.11.1":
-  version "8.11.1"
-  resolved "https://registry.yarnpkg.com/@mui/x-date-pickers/-/x-date-pickers-8.11.1.tgz#381b1eb491252b94fe9ac02f3705b0313ad67f28"
-  integrity sha512-q3n7gHQXnupkddzSJSFhbkYANheeJX0rPfXr9BSgoUlcZF8i5fav8hurBZqpQNmXTffGf6yfJ7KblB0RnPqqkA==
+"@mui/x-date-pickers@8.11.2":
+  version "8.11.2"
+  resolved "https://registry.yarnpkg.com/@mui/x-date-pickers/-/x-date-pickers-8.11.2.tgz#9104921bacc794e4eb0312c4953f0197398dfbe9"
+  integrity sha512-izosRFdlo0Aq4nrQ2klOQBLB+yCX3bIlErF/gxZfaXK/kb8NToweZjhHdiyy+hr+VrxK0A71AWI6LkPyfG2WCg==
   dependencies:
     "@babel/runtime" "^7.28.2"
-    "@mui/utils" "^7.3.1"
-    "@mui/x-internals" "8.11.1"
+    "@mui/utils" "^7.3.2"
+    "@mui/x-internals" "8.11.2"
     "@types/react-transition-group" "^4.4.12"
     clsx "^2.1.1"
     prop-types "^15.8.1"
     react-transition-group "^4.4.5"
 
-"@mui/x-internals@8.11.1":
-  version "8.11.1"
-  resolved "https://registry.yarnpkg.com/@mui/x-internals/-/x-internals-8.11.1.tgz#12a89eb1ff9bf6f824b33dc737fe7a729fddaac5"
-  integrity sha512-/l0VpgdgYhC7DzqdWaQcuv3wX7cr+o3DBnoKa/t/Vze3y/Wh2VeNSJY/TsW2dIVkFAA9dsjUEMjclT7ScZTDqA==
+"@mui/x-internals@8.11.2":
+  version "8.11.2"
+  resolved "https://registry.yarnpkg.com/@mui/x-internals/-/x-internals-8.11.2.tgz#d05e68f42e485a7b1a73d716281476192cfc87df"
+  integrity sha512-3BFZ0Njgih+eWQBzSsdKEkRMlHtKRGFWz+/CGUrSBb5IApO0apkUSvG4v5augNYASsjksqWOXVlds7Wwznd0Lg==
   dependencies:
     "@babel/runtime" "^7.28.2"
-    "@mui/utils" "^7.3.1"
+    "@mui/utils" "^7.3.2"
     reselect "^5.1.1"
     use-sync-external-store "^1.5.0"
 
