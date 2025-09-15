@@ -4,13 +4,18 @@
 // Used for __tests__/testing-library.js
 // Learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom'
+import { URL } from 'url'
+
+// React 19 compatibility: act is now imported from react-dom/test-utils
+import { act } from 'react'
+global.act = act
+
+// Mock URL for NextAuth compatibility in test environment
+global.URL = global.URL || URL
 
 // Set up DOM environment for tests
 Object.defineProperty(window, 'URL', {
-    value: {
-        createObjectURL: jest.fn(() => 'mock-url'),
-        revokeObjectURL: jest.fn(),
-    },
+    value: global.URL,
     writable: true,
 })
 
@@ -23,6 +28,21 @@ const localStorageMock = {
 }
 Object.defineProperty(window, 'localStorage', {
     value: localStorageMock,
+    writable: true,
+})
+
+// Mock file operations for tests
+Object.defineProperty(window, 'URL', {
+    value: {
+        createObjectURL: jest.fn(() => 'mock-url'),
+        revokeObjectURL: jest.fn(),
+    },
+    writable: true,
+})
+
+// Override the URL constructor for NextAuth
+Object.defineProperty(window, 'URL', {
+    value: global.URL,
     writable: true,
 })
 

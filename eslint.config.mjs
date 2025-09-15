@@ -21,6 +21,7 @@ const eslintConfig = [
             "build/**",
             "dist/**",
             "coverage/**",
+            "__mocks__/**",
             "*.config.js",
             "*.config.mjs",
         ],

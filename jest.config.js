@@ -13,6 +13,9 @@ const customJestConfig = {
         // Handle module aliases (this will be automatically configured for you based on your tsconfig.json paths)
         '^@components/(.*)$': '<rootDir>/src/components/$1',
         '^@pages/(.*)$': '<rootDir>/src/pages/$1',
+        // Mock NextAuth for testing
+        '^next-auth$': '<rootDir>/__mocks__/next-auth.js',
+        '^next-auth/react$': '<rootDir>/__mocks__/next-auth-react.js',
     },
     collectCoverageFrom: [
         'src/**/*.{js,jsx,ts,tsx}',

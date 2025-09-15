@@ -238,3 +238,6 @@ export type { ProcessedData, UseDataProcessingReturn, UseDataFilteringReturn } f
 
 export { useFileOperations, useLocalStorage } from './useFileOperations'
 export type { UseFileOperationsReturn, UseLocalStorageReturn } from './useFileOperations'
+
+// Authentication hooks
+export { useAuth, useRequireAuth } from './useAuth'
