@@ -1251,23 +1251,23 @@
     prop-types "^15.8.1"
     react-is "^19.1.1"
 
-"@mui/x-date-pickers@8.11.2":
-  version "8.11.2"
-  resolved "https://registry.yarnpkg.com/@mui/x-date-pickers/-/x-date-pickers-8.11.2.tgz#9104921bacc794e4eb0312c4953f0197398dfbe9"
-  integrity sha512-izosRFdlo0Aq4nrQ2klOQBLB+yCX3bIlErF/gxZfaXK/kb8NToweZjhHdiyy+hr+VrxK0A71AWI6LkPyfG2WCg==
+"@mui/x-date-pickers@8.12.0":
+  version "8.12.0"
+  resolved "https://registry.yarnpkg.com/@mui/x-date-pickers/-/x-date-pickers-8.12.0.tgz#cbfe95a1f88c2137dc53de2862add2896e2a12fa"
+  integrity sha512-CDcjdBNwMcTy3flZTCKZqSUS6deBFGKLqy3Vl6bgr5KTo8Vky2v+S+zNi56fv23Qs+P47GwpILcm3QZt/0BP0A==
   dependencies:
     "@babel/runtime" "^7.28.2"
     "@mui/utils" "^7.3.2"
-    "@mui/x-internals" "8.11.2"
+    "@mui/x-internals" "8.12.0"
     "@types/react-transition-group" "^4.4.12"
     clsx "^2.1.1"
     prop-types "^15.8.1"
     react-transition-group "^4.4.5"
 
-"@mui/x-internals@8.11.2":
-  version "8.11.2"
-  resolved "https://registry.yarnpkg.com/@mui/x-internals/-/x-internals-8.11.2.tgz#d05e68f42e485a7b1a73d716281476192cfc87df"
-  integrity sha512-3BFZ0Njgih+eWQBzSsdKEkRMlHtKRGFWz+/CGUrSBb5IApO0apkUSvG4v5augNYASsjksqWOXVlds7Wwznd0Lg==
+"@mui/x-internals@8.12.0":
+  version "8.12.0"
+  resolved "https://registry.yarnpkg.com/@mui/x-internals/-/x-internals-8.12.0.tgz#9c34edfa1d6d437c6df948e9fd999c0704051bd1"
+  integrity sha512-KCZgFHwuPg0v8I2gpjeC6k3eDRXPPX8RIGSNDXe8zSZ8dAw+p6Q2pzT9kKvctqCXSFK8ct/5YQwqx8Quhs8Ndg==
   dependencies:
     "@babel/runtime" "^7.28.2"
     "@mui/utils" "^7.3.2"
